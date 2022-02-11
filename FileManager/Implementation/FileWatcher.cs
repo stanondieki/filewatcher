@@ -1,8 +1,6 @@
 ﻿using FileManager.Interfaces;
 using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 
 namespace FileManager.Implementation
 
@@ -10,33 +8,32 @@ namespace FileManager.Implementation
     public class FileWatcher : IFileWatcher
     {
 
-        public void ReadFile(string path)
+        public string ReadFile(string dirPath, string fileName)
         {
-             if (File.Exists(path))
+            // Read the file only if it exists, you cannot read a file that does not exist
+            if (File.Exists(Path.Combine(dirPath, fileName)))
             {
-                string [] lines = File.ReadAllLines(path);
-                foreach(string line in lines)
-                {
-                    Console.WriteLine(line);
-                }
+                string text = File.ReadAllText(Path.Combine(dirPath, fileName));
+                return text;
             }
-            else
-            {
-                Console.WriteLine("File Does not exist");
-            }
-            // Add code to read from the specified file given in path
-            // If the path is non-existent, send a message that says so
+
+            return $"File {fileName} does not exist";
         }
 
-        public void WriteFile(string path, string content)
+        public void WriteFile(string dirPath, string fileName, string content)
         {
-            string[] lines = {"deep, state"};
+            CreateDirectory(dirPath);
 
-            File.WriteAllLines(path, lines);
-            File.AppendAllLines(path, lines);
+            File.AppendAllText(Path.Combine(dirPath, fileName), content + Environment.NewLine);
+        }
 
-            // Add code to the file
-            // Do not overwrite what is already there
+        private void CreateDirectory(string dirPath)
+        {
+            // Check if the directory exists, create it if it does not exists
+            if (!Directory.Exists(dirPath))
+            {
+                Directory.CreateDirectory(dirPath);
+            }
         }
     }
 }
